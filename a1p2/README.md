@@ -15,17 +15,3 @@ python a1p2.py hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/input.csv hdfs://c
 
 # Assumptions 
 The machine should have Python 2.7 (with pyspark), Hadoop, and Spark installed. 
-
-
-# Some useful commands
-- To copy a file to hdfs
-
-  ~/hadoop-3.1.2/bin/hadoop fs -put input.csv hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/input.csv
-
-- To list all files on hdfs
-
-  ~/hadoop-3.1.2/bin/hadoop fs -ls hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000
-
-- To delete a file on hdfs
-
-  ~/hadoop-3.1.2/bin/hdfs dfs -rm -r -skipTrash hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/output.csv 
