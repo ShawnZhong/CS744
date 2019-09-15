@@ -1,10 +1,10 @@
 # CS744
 
-## TODO
+### TODO
  - a1p2 set configuration
 
 
-# Some useful commands
+### Some useful commands
 - To copy a file to hdfs
 
   ```sh
