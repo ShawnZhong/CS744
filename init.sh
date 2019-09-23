@@ -2,7 +2,8 @@
 
 # Install deps
 sudo apt-get update
-sudo apt-get install openjdk-8-jdk -y
+sudo apt-get install openjdk-8-jdk python-pip -y
+pip install pyspark
 
 # Part 0: 
 sudo mkfs.ext4 /dev/xvda4
