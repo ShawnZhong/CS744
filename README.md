@@ -22,7 +22,7 @@ http://clnodevm053-1.clemson.cloudlab.us:8080/
 - To list all files on hdfs
 
   ```sh
-  ~/hadoop-3.1.2/bin/hadoop fs -ls hdfs://clnodevm053-1.clemson.cloudlab.us:9000
+  ~/hadoop-3.1.2/bin/hadoop fs -ls hdfs://clnodevm053-1.clemson.cloudlab.us:9000/
   ```
 
 - To delete a file on hdfs
