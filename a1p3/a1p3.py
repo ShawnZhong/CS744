@@ -1,39 +1,40 @@
-# Example scala code:
-
-# # Load graph as an RDD of (URL, outlinks) pairs
-# val links = spark.textFile(...).map(...).persist()
-# var ranks = // RDD of (URL, rank) pairs
-# for (i <- 1 to ITERATIONS) {
-#     # Build an RDD of (targetURL, float) pairs with the contributions sent by each page
-#     val contribs = links.join(ranks).flatMap {
-#         (url, (links, rank)) => links.map(dest => (dest, rank/links.size))
-#     }
-#     # Sum contributions by URL and get new ranks
-#     ranks = contribs.reduceByKey((x,y) => x+y).mapValues(sum => a/N + (1-a)*sum)
-# }
-
-
-import sys
-
 from pyspark import SparkContext, SparkConf 
 
 input_path = "hdfs://clnodevm053-1.clemson.cloudlab.us:9000/web-BerkStan.txt"
 
 # set SparkConf and SparkContext
-conf = SparkConf().setAppName("a1p3").setMaster("local")
+conf = SparkConf().setAppName("a1p3")
 sc = SparkContext(conf=conf)
 
 # Read the file as RDD
 lines = sc.textFile(input_path)
 
-# Take lines from the fifth line, since the first 4 lines are comments
-comments = lines.take(4)
-data = lines.filter(lambda l: not l in comments)
-
 # Parse each line to a pair (from_node_id, to_node_id)
-pairs = data.map(lambda l: l.split()).groupByKey()
+pairs = lines.filter(lambda l: l[0] != "#")\
+             .map(lambda l: l.split())
 
-# For task 3
-# pairs.cache()
+# buckets is a list of tuples (from_id, [to_id_1, to_id_2, to_id_3, ...])
+buckets = pairs.groupByKey().cache()
 
-# lines.saveAsTextFile("1.txt")
+# Set initial rank of each page to be 1.
+# rank is a list of tuples (from_id, rank)
+rank = buckets.mapValues(lambda e: 1.0)
+
+# On each iteration, each page contributes to its neighbors by rank(p)/ # of neighbors.
+def compute_contribution(to_id_list, rank):
+    return [(to_id, rank / len(to_id_list)) for to_id in to_id_list]
+
+for i in range(1):
+    # out_edge_ranks is a list of tuples (from_id, ([to_id_1, to_id_2, to_id_3, ...], rank_for_from_id))
+    out_edge_ranks = buckets.join(rank)
+
+    # contrib is a list of tuples (to_id, contrib)
+    contrib = out_edge_ranks.flatMap(lambda e: compute_contribution(e[1][0], e[1][1]))\
+                            .reduceByKey(lambda e1, e2: e1 + e2)
+
+    print(contrib.take(10))
+
+    # Update each page's rank to be 0.15 + 0.85 * (sum of contributions).
+    rank = contrib.mapValues(lambda l: 0.15 + 0.85 * l)
+
+rank.saveAsTextFile("output")
