@@ -24,11 +24,11 @@ echo \
 <configuration>
 <property>
 <name>fs.default.name</name>
-<value>hdfs://220g1-030823vm-1.wisc.cloudlab.us:9000</value>
+<value>hdfs://c220g1-030823vm-1.wisc.cloudlab.us:9000</value>
 </property>
 </configuration>' > hadoop-3.1.2/etc/hadoop/core-site.xml
 
-echo \ 
+echo \
 '<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
@@ -43,8 +43,8 @@ echo \
 </configuration>' > hadoop-3.1.2/etc/hadoop/hdfs-site.xml
 
 
-echo "220g1-030823vm-2.wisc.cloudlab.us
-220g1-030823vm-3.wisc.cloudlab.us" > hadoop-3.1.2/etc/hadoop/workers
+echo "c220g1-030823vm-2.wisc.cloudlab.us
+c220g1-030823vm-3.wisc.cloudlab.us" > hadoop-3.1.2/etc/hadoop/workers
 
 echo \
 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre' >> hadoop-3.1.2/etc/hadoop/hadoop-env.sh
@@ -54,7 +54,7 @@ echo \
 wget http://mirror.metrocast.net/apache/spark/spark-2.4.4/spark-2.4.4-bin-hadoop2.7.tgz
 tar zvxf spark-2.4.4-bin-hadoop2.7.tgz
 
-echo "220g1-030823vm-2.wisc.cloudlab.us
-220g1-030823vm-3.wisc.cloudlab.us" > spark-2.4.4-bin-hadoop2.7/conf/slaves
+echo "c220g1-030823vm-2.wisc.cloudlab.us
+c220g1-030823vm-3.wisc.cloudlab.us" > spark-2.4.4-bin-hadoop2.7/conf/slaves
 
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCuRNY6/5CsdCnQ6ZTrzu7EHRcvqhU9ideUDRCrnr92NLL7yDQ01tL9OHK5m6UBso90Px6++5F6y/h7HbsA+EcZK6M7sen4g3VvWgO49sumZWsbRlqqviKROxEjdr9rD4NV17GMFlNDI128v9XQv4wbQqQ7v+vVWNnodbTDcZaF1L72hF8Y+/dvsvajMEzVBhdUVs/1IN/5i1ABMsZmpRwu6BI1xm2492bnFMrpyPI1xD9Nb5A/9LtjFenyPYIUqKDhNyKlejb3dKwON3PyPF/aQZ3VPQ/cWBUCQ0hJYzNJbLhfFY1wvVtKpA5v99Zcvh/raIVx1niBJNbOPuv8c8px szhong@node0.szhong-qv58271.uwmadison744-f19-pg0.wisc.cloudlab.us" >> ~/.ssh/authorized_keys
