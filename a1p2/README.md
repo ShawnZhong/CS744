@@ -5,12 +5,12 @@ This application takes in a csv file, sorts it by the third and last column, and
 To run this application, use the following
 
 ```sh
-python a1p2.py [path to input file] [path to output file]
+python sort.py [path to input file] [path to output file]
 ```
 
 Example: 
 ```sh
-python a1p2.py hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/input.csv hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/output.csv
+python sort.py hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/input.csv hdfs://c240g1-031305vm-1.wisc.cloudlab.us:9000/output.csv
 ```
 
 # Assumptions 
