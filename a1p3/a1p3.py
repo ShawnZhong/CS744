@@ -1,7 +1,7 @@
 from pyspark import SparkContext, SparkConf 
 
-input_path = "/proj/uwmadison744-f19-PG0/data-part3/enwiki-pages-articles"
-# input_path = "hdfs://c220g1-030823vm-1.wisc.cloudlab.us:9000/web-BerkStan.txt"
+# input_path = "/proj/uwmadison744-f19-PG0/data-part3/enwiki-pages-articles"
+input_path = "hdfs://c220g1-030823vm-1.wisc.cloudlab.us:9000/web-BerkStan.txt"
 
 # set SparkConf and SparkContext
 conf = SparkConf().setAppName("a1p3").setMaster("spark://c220g1-030823vm-1.wisc.cloudlab.us:7077")
