@@ -9,4 +9,5 @@ spark-submit PageRank.py
 ```
 
 # Assumptions 
-The machine should have Python 2.7 (with pyspark), Hadoop, and Spark installed. 
+- The machine should have Python 2.7 (with pyspark), Hadoop, and Spark installed. 
+- The dataset used for this algorithm is as specified in PageRank.py
