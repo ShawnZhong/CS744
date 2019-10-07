@@ -1,22 +1,6 @@
 #!/bin/bash
 export TF_RUN_DIR="~/tf"
 
-function terminate_cluster() {
-    echo "Terminating the servers"
-    CMD="ps aux | grep -v 'grep' | grep -v 'bash' | grep -v 'ssh' | grep 'python code_template' | awk -F' ' '{print \$2}' | xargs kill -9"
-    for i in `seq 0 2`; do
-        ssh node$i "$CMD"
-    done
-}
-
-
-function install_tensorflow() {
-    for i in `seq 0 2`; do
-        nohup ssh node$i "sudo apt update; sudo apt install --assume-yes python3-pip python3-dev; sudo pip install tensorflow"
-    done
-}
-
-
 function start_cluster() {
     if [ -z $2 ]; then
         echo "Usage: start_cluster <python script> <cluster mode>"
@@ -44,3 +28,5 @@ function start_cluster() {
         fi
     fi
 }
+
+start_cluster main.py single
