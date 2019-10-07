@@ -14,15 +14,21 @@ else
     echo "Starting tensorflow servers on all hosts based on the spec in $1"
     echo "The server output is logged to serverlog-i.out, where i = 0, ..., 3 are the VM numbers."
     if [ "$2" = "single" ]; then
+        nohup ssh node0 "killall python3; dstat -f" > dstat-node0.log
+
         nohup ssh node0 "cd ~/tf ; python3 $1 --deploy_mode=single" > serverlog-0.out 2>&1&
     elif [ "$2" = "cluster" ]; then
-        nodup shh node0 "dstat -f" > dstat-node0.log
-        nodup shh node1 "dstat -f" > dstat-node0.log
+        nohup ssh node0 "killall python3; dstat -f" > dstat-node0.log
+        nohup ssh node1 "killall python3; dstat -f" > dstat-node1.log
 
         nohup ssh node0 "cd ~/tf ; python3 $1 --deploy_mode=cluster  --job_name=ps" > serverlog-ps-0.out 2>&1&
         nohup ssh node0 "cd ~/tf ; python3 $1 --deploy_mode=cluster  --task_index=0" > serverlog-0.out 2>&1&
         nohup ssh node1 "cd ~/tf ; python3 $1 --deploy_mode=cluster  --task_index=1" > serverlog-1.out 2>&1&
     else
+        nohup ssh node0 "killall python3; dstat -f" > dstat-node0.log
+        nohup ssh node1 "killall python3; dstat -f" > dstat-node1.log
+        nohup ssh node2 "killall python3; dstat -f" > dstat-node2.log
+
         nohup ssh node0 "cd ~/tf ; python3 $1 --deploy_mode=cluster2  --job_name=ps" > serverlog-ps-0.out 2>&1&
         nohup ssh node0 "cd ~/tf ; python3 $1 --deploy_mode=cluster2  --task_index=0" > serverlog-0.out 2>&1&
         nohup ssh node1 "cd ~/tf ; python3 $1 --deploy_mode=cluster2  --task_index=1" > serverlog-1.out 2>&1&
