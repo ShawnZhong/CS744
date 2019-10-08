@@ -22,23 +22,11 @@ os.environ["TF_CONFIG"] = json.dumps({
 batch_size = 100
 num_classes = 10
 epochs = 1
-
-# input image dimensions
 img_rows, img_cols = 28, 28
 
 # the data, split between train and test sets
 mnist = keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
-input_shape = (img_rows, img_cols, 1)
-
-x_train, x_test = x_train / 255.0, x_test / 255.0
-
-# convert class vectors to binary class matrices
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_test = keras.utils.to_categorical(y_test, num_classes)
 
 x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
 x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
