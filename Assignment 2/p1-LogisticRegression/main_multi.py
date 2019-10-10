@@ -1,13 +1,14 @@
 import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
+import input_data
 
 # define the command line flags that can be sent
-tf.app.flags.DEFINE_integer("task_index", 0, "Index of task with in the job.")
-tf.app.flags.DEFINE_string("job_name", "worker", "either worker or ps")
-tf.app.flags.DEFINE_string("deploy_mode", "single", "either single or cluster")
-FLAGS = tf.app.flags.FLAGS
+tf.compat.v1.flags.DEFINE_integer("task_index", 0, "Index of task.")
+tf.compat.v1.flags.DEFINE_string("job_name", "worker", "worker or ps")
+tf.compat.v1.flags.DEFINE_string("deploy_mode", "single", "single or cluster")
+FLAGS = tf.compat.v1.flags.FLAGS
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.DEBUG)
+tf.compat.v1.disable_eager_execution()
 
 clusterSpec_single = tf.train.ClusterSpec({
     "worker": [
@@ -55,39 +56,40 @@ if FLAGS.job_name == "ps":
     server.join()
 elif FLAGS.job_name == "worker":
     with tf.device(
-        tf.train.replica_device_setter(
+        tf.compat.v1.train.replica_device_setter(
             worker_device="/job:worker/task:%d" % FLAGS.task_index,
             cluster=clusterinfo
         )
     ):
-        x = tf.placeholder(tf.float32, [None, 784])
-        y = tf.placeholder(tf.float32, [None, 10])
+        x = tf.compat.v1.placeholder(tf.float32, [None, 784])
+        y = tf.compat.v1.placeholder(tf.float32, [None, 10])
         W = tf.Variable(tf.random.uniform([784, 10]))
         b = tf.Variable(tf.random.uniform([10]))
 
         pred = tf.nn.softmax(tf.matmul(x, W) + b)
-        loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(pred),
-                                             reduction_indices=1))
-        optimizer = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
+        loss = tf.reduce_mean(input_tensor=-tf.reduce_sum(input_tensor=y * tf.math.log(pred),
+                                                          axis=1))
+        optimizer = tf.compat.v1.train.GradientDescentOptimizer(
+            0.01).minimize(loss)
 
-        pred_label = tf.argmax(pred, 1)
-        actual_label = tf.argmax(y, 1)
+        pred_label = tf.argmax(input=pred, axis=1)
+        actual_label = tf.argmax(input=y, axis=1)
         equality = tf.equal(pred_label, actual_label)
-        accuracy = tf.reduce_mean(tf.cast(equality, tf.float32))
+        accuracy = tf.reduce_mean(input_tensor=tf.cast(equality, tf.float32))
 
-        tf.summary.scalar("Accuracy", accuracy)
-        tf.summary.scalar("Loss", loss)
+        tf.compat.v1.summary.scalar("Accuracy", accuracy)
+        tf.compat.v1.summary.scalar("Loss", loss)
 
-        metric = tf.summary.merge_all()
+        metric = tf.compat.v1.summary.merge_all()
 
-    init = tf.global_variables_initializer()
+    init = tf.compat.v1.global_variables_initializer()
 
-    epoch = 50
+    epoch = 1
     batch_size = 100
 
-    with tf.Session(server.target) as sess:
+    with tf.compat.v1.Session(server.target) as sess:
         sess.run(init)
-        writer = tf.summary.FileWriter("summary", sess.graph)
+        writer = tf.compat.v1.summary.FileWriter("summary", sess.graph)
 
         for i in range(epoch):
 
@@ -99,7 +101,9 @@ elif FLAGS.job_name == "worker":
 
             xs, ys = mnist.test.next_batch(batch_size)
             a, l, summary = sess.run(
-                [accuracy, loss, metric], feed_dict={x: xs, y: ys})
+                [accuracy, loss, metric],
+                feed_dict={x: xs, y: ys}
+            )
             print("Epoch: %d, Loss: %f, Accuracy: %f" % (i, l, a))
             writer.add_summary(summary, i)
 

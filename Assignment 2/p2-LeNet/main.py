@@ -1,8 +1,10 @@
+# %%
 import tensorflow as tf
 import os
 import json
 import sys
 
+# %%
 os.environ["TF_CONFIG"] = json.dumps({
     "cluster": {
         "worker": [
@@ -17,23 +19,29 @@ os.environ["TF_CONFIG"] = json.dumps({
     }
 })
 
+# %%
 batch_size = 100
 num_classes = 10
 epochs = 10
 img_rows, img_cols = 28, 28
 
+# %%
+
 # the data, split between train and test sets
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
+# %%
 x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
 x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
 input_shape = (img_rows, img_cols, 1)
 
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
+# %%
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
 
+# %%
 with strategy.scope():
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(
@@ -58,6 +66,7 @@ with strategy.scope():
     )
 
 
+# %%
 model.fit(
     x_train,
     y_train,
