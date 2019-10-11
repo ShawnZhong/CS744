@@ -22,7 +22,7 @@ os.environ["TF_CONFIG"] = json.dumps({
 })
 
 # Hyperparameters and constants
-batch_size = 100
+batch_size = 50
 num_classes = 10
 epochs = 30
 img_rows, img_cols = 28, 28
@@ -73,7 +73,8 @@ with strategy.scope():
 model.fit(
     x_train,
     y_train,
-    batch_size=batch_size,
+    steps_per_epoch= x_train.shape[0] // batch_size,
+    # batch_size=batch_size,
     epochs=epochs,
     validation_data=(x_test, y_test),
     callbacks=[tensorboard_callback],
