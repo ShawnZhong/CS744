@@ -6,7 +6,7 @@ if [ -z $1 ]; then
 else
     echo "Create p2 on remote hosts if they do not exist."
     echo "Copying the script to all the remote hosts."
-    for i in `seq 0 $1`; do
+    for i in `seq 0 2`; do
         ssh node$i "mkdir -p ~/p2"
         scp main.py node$i:~/p2
     done

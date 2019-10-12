@@ -1,6 +1,7 @@
 #!/bin/bash
 
-rm -f *.out
+rm -f *.out 
+rm -rf MNIST_data
 
 CMD="rm -rf ~/tf;"
 for i in `seq 0 2`; do
