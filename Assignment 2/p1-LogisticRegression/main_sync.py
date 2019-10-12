@@ -66,7 +66,12 @@ elif FLAGS.job_name == "worker":
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
     # Setup devices
-    with tf.device("/job:worker/task:%d" % FLAGS.task_index):
+    with tf.device(
+        tf.train.replica_device_setter(
+            worker_device="/job:worker/task:%d" % FLAGS.task_index,
+            cluster=clusterinfo
+        )
+    ):
 
         # Initialize placeholder for inputs and variable for parameters
         x = tf.compat.v1.placeholder(tf.float32, [None, 784])
@@ -93,7 +98,10 @@ elif FLAGS.job_name == "worker":
             total_num_replicas=num_workers
         )
 
-        hook = optimizer.make_session_run_hook(FLAGS.task_index == 0)
+        hook = optimizer.make_session_run_hook(
+            FLAGS.task_index == 0,
+            num_tokens=0
+        )
 
         optimizer = optimizer.minimize(loss, global_step=global_step)
 
@@ -102,7 +110,18 @@ elif FLAGS.job_name == "worker":
         actual_label = tf.argmax(input=y, axis=1)
         accuracy = tf.reduce_mean(
             input_tensor=tf.cast(
-                tf.equal(pred_label, actual_label), tf.float32)
+                tf.equal(pred_label, actual_label),
+                tf.float32
+            )
+        )
+
+        sess_config = tf.ConfigProto(
+            allow_soft_placement=True,
+            log_device_placement=False,
+            device_filters=[
+                "/job:ps",
+                "/job:worker/task:%d" % FLAGS.task_index
+            ]
         )
 
         # Summary for accuracy and loss
@@ -118,6 +137,7 @@ elif FLAGS.job_name == "worker":
         master="grpc://" + clusterinfo.task_address("worker", 0),
         is_chief=FLAGS.task_index == 0,
         hooks=[hook],
+        config=sess_config,
         stop_grace_period_secs=10,
     ) as sess:
         sess.run(init)
