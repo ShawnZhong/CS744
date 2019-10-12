@@ -91,7 +91,7 @@ elif FLAGS.job_name == "worker":
         )
 
         # Define synchronous optimizer
-        optimizer = tf.train.ElasticAverageOptimizer(
+        optimizer = tf.compat.v1.train.SyncReplicasOptimizer(
             tf.compat.v1.train.GradientDescentOptimizer(0.01),
             replicas_to_aggregate=num_workers,
             total_num_replicas=num_workers
