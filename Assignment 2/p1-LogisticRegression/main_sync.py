@@ -115,6 +115,7 @@ elif FLAGS.job_name == "worker":
             )
         )
 
+        # Define session configuration
         sess_config = tf.ConfigProto(
             allow_soft_placement=True,
             log_device_placement=False,
