@@ -93,8 +93,7 @@ elif FLAGS.job_name == "worker":
             total_num_replicas=num_workers
         )
 
-        sync_replicas_hook = optimizer.make_session_run_hook(
-            FLAGS.task_index == 0)
+        hook = optimizer.make_session_run_hook(FLAGS.task_index == 0)
 
         optimizer = optimizer.minimize(loss, global_step=global_step)
 
@@ -118,7 +117,7 @@ elif FLAGS.job_name == "worker":
     with tf.compat.v1.train.MonitoredTrainingSession(
         master="grpc://" + clusterinfo.task_address("worker", 0),
         is_chief=FLAGS.task_index == 0,
-        hooks=[sync_replicas_hook],
+        hooks=[hook],
         stop_grace_period_secs=10,
     ) as sess:
         sess.run(init)
