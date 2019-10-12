@@ -2,7 +2,7 @@
 dstat="cd ~/p1; dstat --cpu --mem --net --output report.csv &"
 
 if [ -z $2 ]; then
-    echo "Usage: start_cluster <python script> <cluster mode>"
+    echo "Usage: start_cluster <python script> <number of worker>"
     echo "Here, <python script> contains the cluster spec that assigns an ID to all server."
 else
     echo "Create ~/p1 on remote hosts if they do not exist."
@@ -22,17 +22,17 @@ else
         nohup ssh node0 "$dstat" &
         nohup ssh node1 "$dstat" &
 
-        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster  --job_name=ps" > serverlog-ps-0.out 2>&1&
-        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster  --task_index=0" > serverlog-0.out 2>&1&
-        nohup ssh node1 "cd ~/p1 ; python3 $1 --deploy_mode=cluster  --task_index=1" > serverlog-1.out 2>&1&
+        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster --job_name=ps" > serverlog-ps-0.out 2>&1&
+        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster --task_index=0" > serverlog-0.out 2>&1&
+        nohup ssh node1 "cd ~/p1 ; python3 $1 --deploy_mode=cluster --task_index=1" > serverlog-1.out 2>&1&
     elif [ "$2" = "3" ]; then
         nohup ssh node0 "$dstat" &
         nohup ssh node1 "$dstat" &
         nohup ssh node2 "$dstat" &
 
-        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2  --job_name=ps" > serverlog-ps-0.out 2>&1&
-        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2  --task_index=0" > serverlog-0.out 2>&1&
-        nohup ssh node1 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2  --task_index=1" > serverlog-1.out 2>&1&
-        nohup ssh node2 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2  --task_index=2" > serverlog-2.out 2>&1&
+        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2 --job_name=ps" > serverlog-ps-0.out 2>&1&
+        nohup ssh node0 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2 --task_index=0" > serverlog-0.out 2>&1&
+        nohup ssh node1 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2 --task_index=1" > serverlog-1.out 2>&1&
+        nohup ssh node2 "cd ~/p1 ; python3 $1 --deploy_mode=cluster2 --task_index=2" > serverlog-2.out 2>&1&
     fi
 fi

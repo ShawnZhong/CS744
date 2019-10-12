@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -f *.out 
+rm -f report.csv
 rm -rf MNIST_data
 
 CMD="rm -rf ~/p1;"

@@ -8,7 +8,6 @@ tf.compat.v1.disable_eager_execution()
 epoch = 50
 batch_size = 50
 
-
 # Define the command line flags that can be sent
 tf.compat.v1.flags.DEFINE_integer("task_index", 0, "Index of task.")
 tf.compat.v1.flags.DEFINE_string("job_name", "worker", "worker or ps")
@@ -18,7 +17,7 @@ FLAGS = tf.compat.v1.flags.FLAGS
 # Define cluster specs
 clusterSpec_single = tf.train.ClusterSpec({
     "worker": [
-        "node0:2222"
+        "localhost:2222"
     ]
 })
 
@@ -66,10 +65,7 @@ elif FLAGS.job_name == "worker":
 
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
-    # Check if the current server is master
-    is_master = FLAGS.task_index == 0
-
-    # Setyp devices
+    # Setup devices
     with tf.device("/job:worker/task:%d" % FLAGS.task_index):
 
         # Initialize placeholder for inputs and variable for parameters
@@ -95,7 +91,12 @@ elif FLAGS.job_name == "worker":
             tf.compat.v1.train.GradientDescentOptimizer(0.01),
             replicas_to_aggregate=num_workers,
             total_num_replicas=num_workers
-        ).minimize(loss, global_step=global_step)
+        )
+
+        sync_replicas_hook = optimizer.make_session_run_hook(
+            FLAGS.task_index == 0)
+
+        optimizer = optimizer.minimize(loss, global_step=global_step)
 
         # Define variables used for testing
         pred_label = tf.argmax(input=pred, axis=1)
@@ -116,9 +117,9 @@ elif FLAGS.job_name == "worker":
     # Start the training session
     with tf.compat.v1.train.MonitoredTrainingSession(
         master="grpc://" + clusterinfo.task_address("worker", 0),
-        is_chief=is_master,
-        max_wait_secs=10,
-        stop_grace_period_secs=5,
+        is_chief=FLAGS.task_index == 0,
+        hooks=[sync_replicas_hook],
+        stop_grace_period_secs=10,
     ) as sess:
         sess.run(init)
 
@@ -136,8 +137,8 @@ elif FLAGS.job_name == "worker":
 
             # Evaluate the model in each epoch
             x_test, y_test = mnist.test.next_batch(batch_size)
-            a, l, summary = sess.run(
-                [accuracy, loss, metric],
+            a, l, summary, _ = sess.run(
+                [accuracy, loss, metric, global_step],
                 feed_dict={x: x_test, y: y_test}
             )
             print("Epoch: %d, Loss: %f, Accuracy: %f" % (i, l, a))
